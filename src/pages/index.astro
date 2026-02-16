@@ -1,41 +1,120 @@
 ---
-import Layout from '../components/Layout.astro';
-import Background from '../components/Background.astro';
+// This is the frontmatter where you can add server-side logic if needed later
 ---
 
-<Layout title="Astro Quickstart">
-	<main>
-   <Background />
-    <div id="content">
-      <div class="header">
-        <h1>Quickstart Template</h1>
-        <div class="logo">
-          <img src="https://user-images.githubusercontent.com/43764894/223559085-8ff69d2f-4247-427f-a3a6-d2036b00082a.png" alt="Netlify plus Astro banner">
-        </div>
-        <h2>
-          This is a bare-bones Astro project that has everything you need to quickly deploy it to Netlify
-        </h2>
-        <div class="btns">
-          <a href="https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/astro-quickstart" class="btn primary">Deploy to Netlify</a>
-          <a href="https://github.com/netlify-templates/astro-quickstart" class="btn secondary">View Repo</a>
-        </div>
-      </div>
-			<div class="resource-list">
-        <ul>
-          <li>
-            <a href="https://ntl.fyi/38O9wmY">Netlify Blog: Astro posts</a>
-					</li>
-          <li>
-            <a href="https://developers.netlify.com/guides/tag/astro/">Netlify DevHub: Astro Guides</a>
-					</li>
-          <li>
-            <a href="https://ntl.fyi/3KHGtyz">Netlify Docs</a>
-          </li>
-          <li>
-            <a href="https://docs.astro.build/en/getting-started/">Astro Docs</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-	</main>
-</Layout>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>The Infinite Well</title>
+		<style>
+			/* The Atmospheric Vibe */
+			body {
+				margin: 0;
+				background: #050505; /* Pitch black */
+				color: #d4af37; /* Aged Gold */
+				font-family: 'Courier New', Courier, monospace;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				height: 100vh;
+				overflow: hidden;
+			}
+
+			#well-container {
+				position: relative;
+				text-align: center;
+				cursor: pointer;
+				transition: transform 0.3s ease;
+			}
+
+			#well-container:hover {
+				transform: scale(1.02);
+			}
+
+			/* The Well Image - Ensure you upload 'well.png' to your 'public' folder */
+			#well-image {
+				width: 300px;
+				filter: drop-shadow(0 0 20px #1a1a1a);
+				mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0));
+			}
+
+			.fortune-area {
+				margin-top: 30px;
+				min-height: 100px;
+				max-width: 450px;
+				padding: 20px;
+				text-align: center;
+				font-size: 1.2rem;
+				line-height: 1.6;
+				text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+			}
+
+			button {
+				background: transparent;
+				border: 1px solid #d4af37;
+				color: #d4af37;
+				padding: 10px 25px;
+				font-family: inherit;
+				cursor: pointer;
+				margin-top: 20px;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				transition: all 0.3s;
+			}
+
+			button:hover {
+				background: #d4af37;
+				color: #050505;
+				box-shadow: 0 0 15px #d4af37;
+			}
+
+			/* Typewriter animation class */
+			.typing {
+				overflow: hidden;
+				border-right: .15em solid #d4af37;
+				white-space: nowrap;
+				margin: 0 auto;
+				animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+			}
+
+			@keyframes typing { from { width: 0 } to { width: 100% } }
+			@keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #d4af37; } }
+		</style>
+	</head>
+	<body>
+
+		<div id="well-container">
+			<img src="/well.png" alt="The Ancient Well" id="well-image" />
+			<div id="display-area" class="fortune-area">
+				The surface is still. What do you seek?
+			</div>
+			<button id="pay-button">Offer a Quarter</button>
+		</div>
+
+		<script>
+			const button = document.getElementById('pay-button');
+			const display = document.getElementById('display-area');
+
+			button.addEventListener('click', async () => {
+				// 1. Play sound (Make sure coin.mp3 is in your 'public' folder)
+				const audio = new Audio('/coin-drop.mp3');
+				audio.play();
+
+				display.innerHTML = "Retrieving the ripple...";
+
+				try {
+					// 2. Call the Netlify Function
+					const response = await fetch('/.netlify/functions/get-fortune');
+					const data = await response.json();
+
+					// 3. Update display with the fortune
+					display.innerHTML = data.text;
+				} catch (err) {
+					display.innerHTML = "The well remains silent. Check your connection.";
+				}
+			});
+		</script>
+	</body>
+</html>

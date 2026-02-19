@@ -3,7 +3,7 @@ const { Client } = require('pg');
 exports.handler = async (event, context) => {
   // Uses the DATABASE_URL you saved in Netlify's Environment Variables
   const client = new Client({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: process.env.NETLIFY_DATABASE_URL,
     ssl: { rejectUnauthorized: false }
   });
 

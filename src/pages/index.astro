@@ -7,6 +7,9 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<title>The Infinite Well</title>
+		
+		<script async src="https://js.stripe.com/v3/buy-button.js"></script>
+
 		<style>
 			/* The Atmospheric Vibe */
 			body {
@@ -18,62 +21,51 @@
 				flex-direction: column;
 				align-items: center;
 				justify-content: center;
-				height: 100vh;
-				overflow: hidden;
+				min-height: 100vh;
+				overflow-y: auto; /* Changed to auto so you can scroll to the button */
 			}
-<script async
-  src="https://js.stripe.com/v3/buy-button.js">
-</script>
-
-<stripe-buy-button
-  buy-button-id="buy_btn_1T1RIZPYHDf8PqQwJUwMat59"
-  publishable-key="pk_live_51RjqZNPYHDf8PqQwbzdDYtw5WfroztLZciMBREoPnMSp5EpnbppOcBnlBJnBX6b8RPQtCzFmMLpGRF2VfG2uNFsa00ySQOxBi9"
->
-</stripe-buy-button>
 
 			#well-container {
 				position: relative;
 				text-align: center;
-				cursor: pointer;
-				transition: transform 0.3s ease;
+				padding: 20px;
+				max-width: 500px;
+				width: 100%;
 			}
 
-			#well-container:hover {
-				transform: scale(1.02);
-			}
-
-			/* The Well Image - Ensure you upload 'well.png' to your 'public' folder */
+			/* The Well Image Fix */
 			#well-image {
 				width: 300px;
+				height: auto;
+				display: block;
+				margin: 0 auto 20px;
 				filter: drop-shadow(0 0 20px #1a1a1a);
 				mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0));
 			}
 
 			.fortune-area {
-				margin-top: 30px;
-				min-height: 100px;
-				max-width: 450px;
-				padding: 20px;
-				text-align: center;
+				margin-top: 20px;
+				min-height: 80px;
 				font-size: 1.2rem;
 				line-height: 1.6;
 				text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 			}
 
-			button {
+			/* Style for your sound-trigger button */
+			#pay-button {
 				background: transparent;
 				border: 1px solid #d4af37;
 				color: #d4af37;
 				padding: 10px 25px;
 				font-family: inherit;
 				cursor: pointer;
-				margin-top: 20px;
+				margin-bottom: 20px;
 				letter-spacing: 2px;
 				text-transform: uppercase;
 				transition: all 0.3s;
 			}
 
-			button:hover {
+			#pay-button:hover {
 				background: #d4af37;
 				color: #050505;
 				box-shadow: 0 0 15px #d4af37;
@@ -96,10 +88,20 @@
 
 		<div id="well-container">
 			<img src="/well.png" alt="The Ancient Well" id="well-image" />
+			
 			<div id="display-area" class="fortune-area">
 				The surface is still. What do you seek?
 			</div>
+
 			<button id="pay-button">Offer a Quarter</button>
+
+			<div style="margin-top: 10px;">
+				<stripe-buy-button
+				  buy-button-id="buy_btn_1T1RIZPYHDf8PqQwJUwMat59"
+				  publishable-key="pk_live_51RjqZNPYHDf8PqQwbzdDYtw5WfroztLZciMBREoPnMSp5EpnbppOcBnlBJnBX6b8RPQtCzFmMLpGRF2VfG2uNFsa00ySQOxBi9"
+				>
+				</stripe-buy-button>
+			</div>
 		</div>
 
 		<script>
@@ -107,18 +109,19 @@
 			const display = document.getElementById('display-area');
 
 			button.addEventListener('click', async () => {
-				// 1. Play sound (Make sure coin.mp3 is in your 'public' folder)
+				// 1. Play sound
 				const audio = new Audio('/coin-drop.mp3');
 				audio.play();
 
 				display.innerHTML = "Retrieving the ripple...";
 
 				try {
-					// 2. Call the Netlify Function
+					// 2. Call the Netlify Function (Now using the Pooled URL)
 					const response = await fetch('/.netlify/functions/get-fortune');
 					const data = await response.json();
 
 					// 3. Update display with the fortune
+					display.classList.add('typing');
 					display.innerHTML = data.text;
 				} catch (err) {
 					display.innerHTML = "The well remains silent. Check your connection.";

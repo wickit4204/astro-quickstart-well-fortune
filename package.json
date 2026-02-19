@@ -13,7 +13,7 @@
     "prettier-plugin-astro": "^0.14.0",
     "typescript": "^5.4.4"
   },
-  "dependencies": {
+  "dependencies": {"pg": "^8.11.0",
     "cypress": "^13.7.3"
   }
 }
